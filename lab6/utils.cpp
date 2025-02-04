@@ -1,0 +1,84 @@
+#include <cstdio>
+#include "utils.h"
+
+char * input(){
+    char c;
+    int buffer_index = 0;
+    int buffer_capacity = 1;
+    char * buffer = new char[buffer_capacity];
+    buffer[0] = '\0';
+    do{
+        if (buffer_index == buffer_capacity){
+            buffer_capacity *= 2;
+            char * buffer_2 = new char[buffer_capacity];
+            for(int i = 0; i < (buffer_capacity / 2); i++){
+                buffer_2[i] = buffer[i];
+            }
+            delete[] buffer;
+            buffer = buffer_2;
+        }
+        scanf("%c", &c);
+        buffer[buffer_index++] = c;
+    } while (c != '\n');
+    buffer[buffer_index-1] = '\0';
+    char * answer = new char[buffer_index];
+    for (int i = 0; i < buffer_index; i++){
+        answer[i] = buffer[i];
+    }
+    delete[] buffer;
+    return answer;
+}
+
+
+const char * const_input(){
+    return const_cast<char *>(input());
+}
+
+int cmp_str(char * p1, char * p2){
+    while ((*p1 != '\0') && ((*p1++ - *p2++) == 0));
+    return (*--p1 - *--p2);
+}
+
+void utils::init_dinamic_array(dinamic_array * array_ptr){
+    dinamic_array & array = *(array_ptr);
+    array.next_index = 0;
+    array.capacity = 1;
+    array.items = new void * [array.capacity];
+}
+
+void utils::init_dinamic_array(dinamic_array * array_ptr, int capacity){
+    dinamic_array & array = *(array_ptr);
+    array.next_index = 0;
+    array.capacity = capacity;
+    array.items = new void * [array.capacity];
+}
+
+void * utils::get_item(dinamic_array * array_ptr, int index){
+    dinamic_array & array = *(array_ptr);
+    return array.items[index];
+}
+
+void utils::add_item(dinamic_array * array_ptr, void * item){
+    dinamic_array & array = *(array_ptr);
+    if (array.capacity <= array.next_index){
+        void ** buffer = new void * [array.capacity*2];
+        for(int i = 0; i < array.capacity; i++){
+            buffer[i] = utils::get_item(array_ptr, i);
+        }
+        delete[] array.items;
+        array.items = buffer;
+        array.capacity *= 2;
+    }
+    array.items[array.next_index] = item;
+    array.next_index++;
+}
+
+void utils::delete_item(dinamic_array * array_ptr, int index){
+    dinamic_array & array = *(array_ptr);
+    array.items[index] = nullptr;
+}
+
+int utils::get_lenght(dinamic_array * array_ptr){
+    dinamic_array & array = *(array_ptr);
+    return array.next_index;
+}
